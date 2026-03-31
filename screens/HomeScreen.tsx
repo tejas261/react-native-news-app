@@ -2,18 +2,16 @@ import Carousal from "@/components/Carousal";
 import RecommendedNews from "@/components/RecommendedNews";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { ScrollView, Text, View } from "react-native";
-
-interface RecommendedNewsProps {
-  urlToImage: string;
-  title: string;
-  description: string;
-}
+import { ActivityIndicator, FlatList, Text, View } from "react-native";
 
 const HomeScreen = () => {
   const [topHeadlines, setTopHeadlines] = useState([]);
   const [recommendedArticles, setRecommendedArticles] = useState([]);
-  async function getTopHeadlines() {
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch Carousal Data (Static once)
+  const getTopHeadlines = async () => {
     try {
       const res = await axios.get(
         `${process.env.EXPO_PUBLIC_NEWS_BASE_URL}/v2/top-headlines`,
@@ -25,12 +23,15 @@ const HomeScreen = () => {
         },
       );
       setTopHeadlines(res.data.articles);
-    } catch (error: any) {
-      throw new Error("Could not fetch topHeadlines", error);
+    } catch (error) {
+      console.error(error);
     }
-  }
+  };
 
-  async function getRecommendedArticles() {
+  // Fetch Paginated Articles
+  const getRecommendedArticles = async (pageNum: number) => {
+    if (loading) return;
+    setLoading(true);
     try {
       const res = await axios.get(
         `${process.env.EXPO_PUBLIC_NEWS_BASE_URL}/v2/everything`,
@@ -38,24 +39,30 @@ const HomeScreen = () => {
           params: {
             apiKey: process.env.EXPO_PUBLIC_NEWS_API_KEY,
             sortBy: "popularity",
-            page: 1,
+            page: pageNum,
             pageSize: 10,
             domains: "techcrunch.com,thenextweb.com",
           },
         },
       );
-      setRecommendedArticles(res.data.articles);
-    } catch (error: any) {
-      throw new Error("Could not fetch topHeadlines", error);
+      // Append new articles to existing ones
+      setRecommendedArticles((prev) => [...prev, ...res.data.articles]);
+      setPage(pageNum);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    Promise.allSettled([getTopHeadlines(), getRecommendedArticles()]);
+    getTopHeadlines();
+    getRecommendedArticles(1);
   }, []);
 
-  return (
-    <ScrollView>
+  // Header content (Everything above the list)
+  const renderHeader = () => (
+    <View>
       <View
         style={{ paddingTop: 0 }}
         className="flex p-5 justify-between items-center w-full flex-row"
@@ -64,22 +71,37 @@ const HomeScreen = () => {
         <Text className="text-blue-500 font-semibold">View all</Text>
       </View>
       <Carousal articles={topHeadlines} autoPlay />
-      <View className="flex p-5 pt-0 justify-between items-center w-full flex-row">
+      <View
+        style={{ paddingBottom: 6 }}
+        className="flex p-5 pt-0 justify-between items-center w-full flex-row"
+      >
         <Text className="text-xl font-semibold">Recommended articles</Text>
       </View>
-      <View className="flex flex-col gap-5 p-5" style={{ paddingTop: 0 }}>
-        {recommendedArticles.map((item: RecommendedNewsProps, i: number) => {
-          return (
+    </View>
+  );
+
+  return (
+    <View className="flex-1">
+      {renderHeader()}
+      <FlatList
+        data={recommendedArticles}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => (
+          <View>
             <RecommendedNews
-              key={i}
               src={item.urlToImage}
               title={item.title}
               description={item.description}
             />
-          );
-        })}
-      </View>
-    </ScrollView>
+          </View>
+        )}
+        ListFooterComponent={
+          loading ? <ActivityIndicator size="large" /> : null
+        }
+        onEndReached={() => getRecommendedArticles(page + 1)}
+        onEndReachedThreshold={0.5}
+      />
+    </View>
   );
 };
 
