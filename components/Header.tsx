@@ -5,7 +5,7 @@ import { Pressable, Text, TextInput, View } from "react-native";
 const Header = () => {
   const [showInput, setShowInput] = useState(false);
   return (
-    <View className="flex flex-row items-center p-5 pb-0 justify-between w-full">
+    <View className="flex flex-row items-center p-5 justify-between w-full">
       <Text className="text-xl font-semibold text-gray-700">News TV</Text>
 
       <View className="flex relative flex-row gap-4 items-center justify-between w-fit">

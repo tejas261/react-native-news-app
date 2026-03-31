@@ -2,7 +2,7 @@ import Carousal from "@/components/Carousal";
 import RecommendedNews from "@/components/RecommendedNews";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 
 interface RecommendedNewsProps {
   urlToImage: string;
@@ -55,27 +55,31 @@ const HomeScreen = () => {
   }, []);
 
   return (
-    <View>
-      <View className="flex p-5 pt-0 justify-between items-center w-full flex-row">
-        <Text className="text-xl font-medium">Breaking News!</Text>
-        <Text className="text-blue-500">View all</Text>
+    <ScrollView>
+      <View
+        style={{ paddingTop: 0 }}
+        className="flex p-5 justify-between items-center w-full flex-row"
+      >
+        <Text className="text-xl font-semibold">Breaking News!</Text>
+        <Text className="text-blue-500 font-semibold">View all</Text>
       </View>
       <Carousal articles={topHeadlines} autoPlay />
       <View className="flex p-5 pt-0 justify-between items-center w-full flex-row">
-        <Text className="text-xl font-medium">Recommended articles</Text>
+        <Text className="text-xl font-semibold">Recommended articles</Text>
       </View>
-      {/* <Text>{JSON.stringify(recommendedArticles)}</Text> */}
-      {recommendedArticles.map((item: RecommendedNewsProps, i: number) => {
-        return (
-          <RecommendedNews
-            key={i}
-            src={item.urlToImage}
-            title={item.title}
-            description={item.description}
-          />
-        );
-      })}
-    </View>
+      <View className="flex flex-col gap-5 p-5" style={{ paddingTop: 0 }}>
+        {recommendedArticles.map((item: RecommendedNewsProps, i: number) => {
+          return (
+            <RecommendedNews
+              key={i}
+              src={item.urlToImage}
+              title={item.title}
+              description={item.description}
+            />
+          );
+        })}
+      </View>
+    </ScrollView>
   );
 };
 

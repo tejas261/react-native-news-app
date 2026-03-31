@@ -4,7 +4,7 @@ import { View } from "react-native";
 
 export default function Index() {
   return (
-    <View className="p-0">
+    <View className="flex-1">
       <Header />
       <HomeScreen />
     </View>
