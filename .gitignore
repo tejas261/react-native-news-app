@@ -42,7 +42,4 @@ app-example
 /ios
 /android
 .env*
-babel.config.js
-/package-lock.json
-metro.config.js
 package-lock.json
