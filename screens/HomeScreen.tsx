@@ -8,7 +8,7 @@ import {
 } from "@/lib/news";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Bell, Menu, Search } from "lucide-react-native";
+import { Menu, Search } from "lucide-react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -29,7 +29,13 @@ const ActionButton = ({
   icon: React.ReactNode;
   onPress?: () => void;
 }) => (
-  <Pressable onPress={onPress} style={({ pressed }) => [styles.iconButton, pressed && styles.iconButtonPressed]}>
+  <Pressable
+    onPress={onPress}
+    style={({ pressed }) => [
+      styles.iconButton,
+      pressed && styles.iconButtonPressed,
+    ]}
+  >
     {icon}
   </Pressable>
 );
@@ -149,10 +155,6 @@ export default function HomeScreen() {
                   icon={<Search color="#111827" size={20} />}
                   onPress={() => router.navigate("/discover")}
                 />
-                <View>
-                  <ActionButton icon={<Bell color="#111827" size={20} />} />
-                  <View style={styles.notificationDot} />
-                </View>
               </View>
             </View>
 
