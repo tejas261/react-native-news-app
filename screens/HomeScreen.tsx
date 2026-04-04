@@ -176,6 +176,8 @@ export default function HomeScreen() {
                 <Text style={styles.sectionAction}>View all</Text>
               </Pressable>
             </View>
+            <Text>{String(!!process.env.EXPO_PUBLIC_NEWS_BASE_URL)}</Text>
+            <Text>{String(!!process.env.EXPO_PUBLIC_NEWS_API_KEY)}</Text>
 
             <View style={styles.recommendationList}>
               {recommendedArticles.slice(0, 4).map((article, index) => (
